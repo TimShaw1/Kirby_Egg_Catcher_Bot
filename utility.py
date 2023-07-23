@@ -1,6 +1,7 @@
 import win32gui
 import pyautogui
 import ctypes
+import copy
 
 ctypes.windll.user32.SetProcessDPIAware()
 
@@ -28,6 +29,15 @@ def get_screenshot(dimensions=None, window_title=get_window_name()):
     else:
         im = pyautogui.screenshot()
         return im
+    
+def get_game_screenshot(dim):
+    game_dim = copy.deepcopy(dim)
+    game_dim[0] += round(dim[2] / 17.66)
+    game_dim[1] = round(dim[3] / 20.05)
+    game_dim[2] = round(dim[2] / 1.13)
+    game_dim[3] = round(dim[3] / 1.05)
+
+    return get_screenshot(game_dim)
     
 def get_dimensions():
     window_title=get_window_name()
