@@ -27,9 +27,9 @@ def get_screenshot(dimensions: tuple[int] | None = None, window_title: str = get
 
     Parameters
     ----------
-        dimensions : tuple[int], None
+        dimensions : tuple[int], optional
             the `[x, y, w, h]` dimensions of where to get the screenshot
-        window_title : str
+        window_title : str, optional
             the title of the window
 
     Returns
@@ -104,7 +104,7 @@ def get_dimensions(window_title=get_window_name()):
     
     Parameters
     ----------
-    window_title: str
+    window_title: str, optional
         the name of the window
 
     Returns
