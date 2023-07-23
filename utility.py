@@ -28,7 +28,7 @@ def get_screenshot(dimensions: tuple[int] | None = None, window_title: str = get
     Parameters
     ----------
         dimensions : tuple[int], None
-            the [x, y, w, h] dimensions of where to get the screenshot
+            the `[x, y, w, h]` dimensions of where to get the screenshot
         window_title : str
             the title of the window
 
@@ -67,7 +67,7 @@ def get_game_screenshot(dim):
     Parameters
     ----------
     dim : tuple[int]
-        the [x, y, w, h] dimensions of where to get the screenshot
+        the `[x, y, w, h]` dimensions of where to get the screenshot
 
     Returns
     ----------
@@ -98,8 +98,25 @@ def get_game_screenshot(dim):
     else:
         raise ValueError("Window Not found")
     
-def get_dimensions():
-    window_title=get_window_name()
+def get_dimensions(window_title=get_window_name()):
+    """
+    Returns the `[x, y, w, h]` dimensions of the window
+    
+    Parameters
+    ----------
+    window_title: str
+        the name of the window
+
+    Returns
+    ----------
+    tuple[int]
+        the `[x, y, w, h]` dimensions of the window
+
+    Raises
+    ----------
+    ValueError
+        If window is not open or title is incorrect
+    """
     hwnd = win32gui.FindWindow(None, window_title)
     if hwnd:
         win32gui.SetForegroundWindow(hwnd)
@@ -108,12 +125,20 @@ def get_dimensions():
         x1, y1 = win32gui.ClientToScreen(hwnd, (x1 - x, y1 - y))
         return[x,y,x1,y1]
     else:
-        print('Window not found!')
+        raise ValueError("Window Not found")
+
 
 def get_screen_coords():
+    """
+    Utility function that prints the current mouse position indefinitely
+    """
     while True:
         print(pyautogui.position(), end='\r')
 
 def get_screen_ratio(dim):
+    """
+    Utility function that prints the current mouse position as a ratio indefinitely.
+    - The ratio is `(window_width / (pos.x - window_x), window_height / (pos.y - window_y))` rounded to the nearest integer
+    """
     while True:
         print(round(abs(dim[2] / (pyautogui.position().x - dim[0])), 2), round(abs(dim[3] / (pyautogui.position().y - dim[1])), 2), end='\r')
