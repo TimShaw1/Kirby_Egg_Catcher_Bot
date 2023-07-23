@@ -1,17 +1,47 @@
 import win32gui
+import win32con
 import pyautogui
 import ctypes
 import copy
+from typing import Union
 
 ctypes.windll.user32.SetProcessDPIAware()
 
-def get_window_name():
+def get_window_name() -> str:
+    """
+    Gets the full window name of yuzu (eg "yuzu Early Access 1234")
+
+    Returns
+    ----------
+        str
+            the name of the yuzu window
+    """
     windows = pyautogui.getAllWindows()
     for w in windows:
         if "yuzu" in w.title:
             return w.title
 
-def get_screenshot(dimensions=None, window_title=get_window_name()):
+def get_screenshot(dimensions: tuple[int] | None = None, window_title: str = get_window_name()):
+    """
+    Gets a screenshot of the given window within the given dimensions
+
+    Parameters
+    ----------
+        dimensions : tuple[int], None
+            the [x, y, w, h] dimensions of where to get the screenshot
+        window_title : str
+            the title of the window
+
+    Returns
+    ----------
+        im : Image
+            the screenshot of the screen
+
+    Raises
+    ----------
+        ValueError
+            The window title was incorrect or the window was not open
+    """
     if window_title:
         hwnd = win32gui.FindWindow(None, window_title)
         if hwnd and not dimensions:
@@ -25,19 +55,48 @@ def get_screenshot(dimensions=None, window_title=get_window_name()):
             im = pyautogui.screenshot(region=dimensions)
             return im
         else:
-            print('Window not found!')
+            raise ValueError("Window Not found")
     else:
         im = pyautogui.screenshot()
         return im
     
 def get_game_screenshot(dim):
-    game_dim = copy.deepcopy(dim)
-    game_dim[0] += round(dim[2] / 17.66)
-    game_dim[1] = round(dim[3] / 20.05)
-    game_dim[2] = round(dim[2] / 1.13)
-    game_dim[3] = round(dim[3] / 1.05)
+    """
+    Returns a screenshot of the game section in Yuzu (window must be maximised)
 
-    return get_screenshot(game_dim)
+    Parameters
+    ----------
+    dim : tuple[int]
+        the [x, y, w, h] dimensions of where to get the screenshot
+
+    Returns
+    ----------
+    screenshot : Image
+        a screenshot of the screen
+
+    Raises
+    ----------
+    AssertionError
+        If the window is not maximised
+
+    ValueError
+        If yuzu is not open
+    """
+    window = win32gui.FindWindow(get_window_name(), None)
+    if window:
+        tup = win32gui.GetWindowPlacement(window)
+        if tup[1] == win32con.SW_SHOWMAXIMIZED:
+            game_dim = copy.deepcopy(dim)
+            game_dim[0] += round(dim[2] / 17.66)
+            game_dim[1] = round(dim[3] / 20.05)
+            game_dim[2] = round(dim[2] / 1.13)
+            game_dim[3] = round(dim[3] / 1.05)
+
+            return get_screenshot(game_dim)
+        else:
+            raise AssertionError("Window must be maximised")
+    else:
+        raise ValueError("Window Not found")
     
 def get_dimensions():
     window_title=get_window_name()
