@@ -3,6 +3,7 @@ import win32con
 import pyautogui
 import ctypes
 import copy
+from PIL import Image
 from typing import Union
 
 ctypes.windll.user32.SetProcessDPIAware()
@@ -21,7 +22,7 @@ def get_window_name() -> str:
         if "yuzu" in w.title:
             return w.title
 
-def get_screenshot(dimensions: tuple[int] | None = None, window_title: str = get_window_name()):
+def get_screenshot(dimensions: list[int] | None = None, window_title: str = get_window_name()) -> Image:
     """
     Gets a screenshot of the given window within the given dimensions
 
@@ -60,7 +61,7 @@ def get_screenshot(dimensions: tuple[int] | None = None, window_title: str = get
         im = pyautogui.screenshot()
         return im
     
-def get_game_screenshot(dim):
+def get_game_screenshot(dim: list[int]) -> Image:
     """
     Returns a screenshot of the game section in Yuzu (window must be maximised)
 
@@ -98,7 +99,7 @@ def get_game_screenshot(dim):
     else:
         raise ValueError("Window Not found")
     
-def get_dimensions(window_title=get_window_name()):
+def get_dimensions(window_title: str = get_window_name()) -> list[int]:
     """
     Returns the `[x, y, w, h]` dimensions of the window
     
@@ -128,14 +129,14 @@ def get_dimensions(window_title=get_window_name()):
         raise ValueError("Window Not found")
 
 
-def get_screen_coords():
+def get_screen_coords() -> None:
     """
     Utility function that prints the current mouse position indefinitely
     """
     while True:
         print(pyautogui.position(), end='\r')
 
-def get_screen_ratio(dim):
+def get_screen_ratio(dim: list[int]) -> None:
     """
     Utility function that prints the current mouse position as a ratio indefinitely.
     - The ratio is `(window_width / (pos.x - window_x), window_height / (pos.y - window_y))` rounded to the nearest integer
